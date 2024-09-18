@@ -1,0 +1,36 @@
+credentials.yml
+*.aux
+*.bcf
+*.fdb_latexmk
+*.lof
+*.log
+*.lot
+*.xml
+*.gz
+*.fls
+
+exemple_UTT/*.*
+exemple_UTT/
+Kit DDC/*.*
+
+# All content from data except..
+data/photos/*
+data/sauvegarde_db/*
+data/modeles/Reco_bois_Test_Baumer/*
+data/modeles/Reco_bois_142-23/*
+data/arrivage_bois/*
+
+# Except directory and content of
+# !data/photos/Attente_traitement/
+# !data/photos/Attente_traitement/**
+# !data/modeles/Reco_bois_142-23/Model_2.2_142-23_1A_a_132B/
+# !data/modeles/Reco_bois_142-23/Model_2.2_142-23_1A_a_132B/**
+
+
+*/__pycache__/*
+/__pycache__/*
+log/*.log
+log/*.png
+log/*.html
+*.html
+acqu/
