@@ -1,0 +1,18 @@
+\@ifundefined {etoctocstyle}{\let \etoc@startlocaltoc \@gobble \let \etoc@settocdepth \@gobble \let \etoc@depthtag \@gobble \let \etoc@setlocaltop \@gobble }{}
+\babel@toc {french}{}\relax 
+\contentsline {chapter}{\numberline {1}INFORMATIONS GENERALES}{2}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Situation de l'ouvrage}{2}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Plan de situation}{2}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Description de l'ouvrage}{2}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Règles de calcul et de conception}{2}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Stabilité et Repérage des points d'appuis}{3}{section.1.5}%
+\contentsline {subsection}{\numberline {1.5.1}Principe de stabilité de la structure}{3}{subsection.1.5.1}%
+\contentsline {subsection}{\numberline {1.5.2}Repérage des points d'appuis}{3}{subsection.1.5.2}%
+\contentsline {chapter}{\numberline {2}DESCENTE DE CHARGES}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Charges permanentes (G)}{5}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Charges d'exploitation (Q)}{9}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Neige (S)}{13}{section.2.3}%
+\contentsline {section}{\numberline {2.4}G+S}{17}{section.2.4}%
+\contentsline {section}{\numberline {2.5}max(G,S)}{21}{section.2.5}%
+\contentsline {chapter}{Table des figures}{25}{section*.20}%
+\contentsline {chapter}{Liste des tableaux}{25}{section*.20}%
