@@ -1,5 +1,6 @@
 
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 from dep.fonctions import split_premier, split_deuxieme
@@ -39,11 +40,14 @@ class Group():
         df = pd.read_csv(f'./input_data/Groupe {self.groupe_id}_Coordonées Points.csv', sep=';', header=2)  
         # Remove first line which contains the unit
         df = df.drop(0)
-        df_coord_0 = df[['Nom point', 'X', 'Y', 'Z']]
-        df_coord_1 = df[['Nom point.1', 'X.1', 'Y.1', 'Z.1']]
+        df_coord_0 = df[['Point', 'Nom point', 'X', 'Y', 'Z']]
+        df_coord_1 = df[['Point.1', 'Nom point.1', 'X.1', 'Y.1', 'Z.1']]
         # Rename columns of df_coord_1
-        df_coord_1.columns = ['Nom point', 'X', 'Y', 'Z']
+        df_coord_1.columns = ['Point', 'Nom point', 'X', 'Y', 'Z']
+        # Remove row if 'Nom point.1' is '-'  
+        df_coord_1= df_coord_1[df_coord_1['Z'] != '-'] # On élimine les points qui n'ont pas de valeurs de Z
         df_coord = pd.concat([df_coord_0, df_coord_1], axis=0)
+        
         # convert all values from df_coord to integer
         df_coord['X'] = df_coord['X'].apply(lambda x: int(float(x)))
         df_coord['Y'] = df_coord['Y'].apply(lambda x: int(float(x)))
@@ -51,12 +55,14 @@ class Group():
         
         # Reset index
         df_coord.reset_index(drop=True, inplace=True)
+        
         # From df_coord, Split each row of column 'Nom point' to get axe_lettre and axe_chiffre
         df_coord['axe_lettre'] = df_coord.apply(lambda x: split_premier(x['Nom point'], '_'), axis=1)
         df_coord['axe_chiffre'] = df_coord.apply(lambda x: split_deuxieme(x['Nom point'], '_'), axis=1) 
 
-        # Remove from df all points where 'Num point' is -
-        df_coord = df_coord[df_coord['Nom point'] != '-']
+        # If colum 'Nom point' contains '-', then replace colum 'Nom point' by the values of column 'Point
+        df_coord['Nom point'] = df_coord.apply(lambda x: x['Point'] if '-' in x['Nom point'] else x['Nom point'], axis=1)
+        
 
         self.df_coordonnees = df_coord
 
@@ -79,6 +85,8 @@ class Group():
         # Replace all values in column RFx_kN by "" if absolute value of RFz_kN is less than data['tableau_charges']['axe_RFx']['valeur_mini_affichage_kN']
         df['Iteration_#'] = df.apply(lambda x: int(split_premier(x['Cas'],'-')), axis=1)
         df['Type_chargement'] = df.apply(lambda x: split_deuxieme(x['Cas'], '-'), axis=1)
+        # If colum 'Nom point' contains '-', then replace colum 'Nom point' by the values of column 'Point
+        df['Nom point'] = df.apply(lambda x: x['Point'] if '-' in x['Nom point'] else x['Nom point'], axis=1)
         # Reset index
         df.reset_index(drop=True, inplace=True)
         
@@ -100,7 +108,7 @@ class Group():
             if ('Enveloppe : Réactions aux appuis' in line or
                 'Groupe : Points hors groupes' in line):
                 pass
-            elif (';;;;;;;;;;;;;;;;;;;;\n' in line):
+            elif (';;;;;;;;;;;;;\n' in line) or (';;;;;;;;;;;;;;;;;;;;\n' in line):
                 if line.split(';')[0]:
                     nom_tables.append(line.split(';')[0].replace('\ufeff', ''))                
             elif 'Point;Nom point;RFxmin;Cas;RFxmax;Cas;RFymin;Cas;RFymax;Cas;RFzmin;Cas;RFzmax;Cas;;;;;;;\n' in line:
@@ -138,6 +146,8 @@ class Group():
         df['RFzmin_kN'] = df['RFzmin']/100
         df['RFzmax_kN'] = df['RFzmax']/100
 
+        # If colum 'Nom point' contains '-', then replace colum 'Nom point' by the values of column 'Point
+        df['Nom point'] = df.apply(lambda x: x['Point'] if '-' in x['Nom point'] else x['Nom point'], axis=1)
         df.reset_index(drop=True, inplace=True)
 
         self.df_ddc_combinee = df
@@ -193,13 +203,19 @@ class Group():
     def merge_points_charges(self):
         # individuelle
         self.df_ddc_individuelle_points = pd.merge(self.df_coordonnees, self.df_ddc_individuelle, on='Nom point', how='left')
-        self.df_ddc_individuelle_points['axe_chiffre'] = self.df_ddc_individuelle_points['axe_chiffre'].astype(int)
+        try:
+            self.df_ddc_individuelle_points['axe_chiffre'] = self.df_ddc_individuelle_points['axe_chiffre'].astype(int)
+        except:
+            self.df_ddc_individuelle_points['axe_chiffre'] = np.nan
         self.df_ddc_individuelle_points = self.df_ddc_individuelle_points.sort_values(by=['axe_lettre', 'axe_chiffre'])
         self.df_ddc_individuelle_points.reset_index(drop=True, inplace=True)
         # combinee
         self.df_ddc_combinee_points = pd.merge(self.df_coordonnees, self.df_ddc_combinee, on='Nom point', how='left')
-        self.df_ddc_combinee_points['axe_chiffre'] = self.df_ddc_combinee_points['axe_chiffre'].astype(int)
-        self.df_ddc_combinee_points = self.df_ddc_combinee_points.sort_values(by=['axe_lettre', 'axe_chiffre'])
+        try:
+            self.df_ddc_combinee_points['axe_chiffre'] = self.df_ddc_combinee_points['axe_chiffre'].astype(int)
+        except:
+            self.df_ddc_combinee_points['axe_chiffre'] = np.nan
+        self.df_ddc_combinee_points = self.df_ddc_combinee_points.sort_values(by=['axe_lettre', 'axe_chiffre', 'Nom point'])
         self.df_ddc_combinee_points.reset_index(drop=True, inplace=True)
         
 
@@ -224,8 +240,11 @@ class Group():
         df_cas.reset_index(inplace=True)
         # Merge df_cas with df_coordonnees
         df_cas = pd.merge(df_cas,self.df_coordonnees, on='Nom point', how='left')
-        df_cas['axe_chiffre'] = df_cas['axe_chiffre'].astype(int)
-        df_cas = df_cas.sort_values(by=['axe_lettre', 'axe_chiffre'])
+        try:
+            df_cas['axe_chiffre'] = df_cas['axe_chiffre'].astype(int)
+            df_cas = df_cas.sort_values(by=['axe_lettre', 'axe_chiffre'])
+        except:
+            pass
         df_cas.reset_index(drop=True, inplace=True)
         
         

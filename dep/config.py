@@ -72,7 +72,7 @@ def import_data_yaml(yaml_path:str)->dict:
 #######################################################################################
 # Open the existing workbook
 print('Chargement du fichier Excel TEMPLATE_DDC.xlsx') 
-workbook = xw.Book('TEMPLATE_DDC.xlsx')
+workbook = xw.Book('./input_data/TEMPLATE_DDC.xlsx')
 print('-----------------------------------------------')
 
 

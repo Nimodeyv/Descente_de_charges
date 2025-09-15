@@ -1,4 +1,5 @@
 
+import glob
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,6 +11,7 @@ from dep.config import * # workbook, config, data
 
 
 # FONCTIONS:
+# - review_csv_groupes
 # - split_premier
 # - split_deuxieme
 # - create_3D_plot
@@ -19,6 +21,34 @@ from dep.config import * # workbook, config, data
 # - create_latex_cas
 # - fill_cas_in_excel
 # - crop_image
+
+
+###########################################################################################
+# Fonction qui permet de vérifier si les groupes dans le fichier excel correspondent aux groupes dans le répertoire input data
+
+def review_csv_groupes(folder:str):
+    liste_csv = glob.glob(folder)
+    print(liste_csv) 
+    # Méthode par l'analyse des fichiers csv
+    groupe_fichiers = list()
+    for f in liste_csv:
+        gr_id = int(f.split('\\')[-1].split('_')[0].split(' ')[-1])
+        if gr_id not in groupe_fichiers:
+            groupe_fichiers.append(gr_id)
+    print("Liste des groupes dans le répertoire input data:", groupe_fichiers)
+
+    # Méthode par la feuille config du fichier excel
+    groupe = list()
+    for num_cas, cas in config.items():
+        if cas['groupe'] not in groupe and cas['groupe']!=None:
+            groupe.append(int(cas['groupe']))
+    print("Liste des groupes dans le fichier excel:",groupe)
+
+    if groupe_fichiers != groupe:
+        print("Les groupes ne correspondent pas")
+    
+    return groupe
+
 
 
 ###########################################################################################
